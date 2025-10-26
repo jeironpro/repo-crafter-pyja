@@ -1,0 +1,23 @@
+.contenedor-mensaje {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    z-index: 2000;
+}
+
+.mensaje {
+    border-radius: 6px;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.15);
+    color: #fff;
+    font-weight: 600;
+    min-width: 200px;
+    padding: 10px;
+}
+
+.mensaje.success { 
+    background-color: #4caf50;
+} 
+
+.mensaje.error   { 
+    background-color: #e74c3c;
+}

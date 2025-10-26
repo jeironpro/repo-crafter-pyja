@@ -9,6 +9,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet" />
     <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/modal.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/mensaje.css') }}">
 </head>
 <body>
     <header>
@@ -19,10 +20,10 @@
             <div class="buscador">
                 <input type="search" name="buscador" id="buscador" placeholder="Buscar por: nombre | visibilidad">
             </div>
-            {% with messages = get_flashed_messages(with_categories=true) %}
-                {% if messages %}
+            {% with mensajes = get_flashed_messages(with_categories=true) %}
+                {% if mensajes %}
                     <div class="contenedor-mensaje">
-                        {% for categoria, mensaje in messages %}
+                        {% for categoria, mensaje in mensajes %}
                             <div class="mensaje {{ categoria }}">
                                 {{ mensaje }}
                             </div>
@@ -30,9 +31,6 @@
                     </div>
                 {% endif %}
             {% endwith %}
-            <div class="mensaje">
-
-            </div>
             <div class="acciones">
                 <button type="button" id="abrir-modal-crea-repo">Crear repo</button>
                 <button type="button" id="abrir-modal-clona-repos">Clonar todo</button>
@@ -133,7 +131,7 @@
                     <span class="material-symbols-outlined" id="cerrar-modal-actualiza-repo">close</span>
                 </div>
                 <div class="cuerpo-modal">
-                    <form action="" method="post">
+                    <form action="" method="post" id="form-actualiza-repo">
                         <ul id="lista-archivos"></ul>
                         <div class="control">
                             <label for="mensaje-commit">Mensaje</label>
@@ -150,5 +148,6 @@
     </footer>
     <script src="{{ url_for('static', filename='js/buscador.js') }}"></script>
     <script src="{{ url_for('static', filename='js/modal.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/mensaje.js') }}"></script>
 </body>
 </html>

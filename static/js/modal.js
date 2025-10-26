@@ -42,52 +42,58 @@ modalClonaRepos.addEventListener('click', (e) => {
 
 const botonesActualizaRepo = document.querySelectorAll(".boton-actualizar");
 const modalActualizaRepo = document.getElementById('modal-actualiza-repo');
+const formularioCommit = document.getElementById('form-actualiza-repo');
 
 botonesActualizaRepo.forEach(boton => {
     boton.addEventListener("click", async () => {
-        const nombre = boton.getAttribute("data-nombre");
-        const visibilidad = boton.getAttribute("data-visibilidad");
+        const nombre = boton.dataset.nombre;
+        const visibilidad = boton.dataset.visibilidad;
 
-        fetch(`/estado_repo/${visibilidad}/${nombre}`)
-            .then(respuesta => respuesta.json())
-            .then(datos => {
-                const lista = document.getElementById("lista-archivos");
-                lista.textContent = "";
+        try {
+            const respuesta = await fetch(`/estado_repo/${visibilidad}/${nombre}`);
+            if (!respuesta.ok) throw new Error(`Error ${respuesta.status}`);
+            const datos = await respuesta.json();
 
-                if (datos.archivos.length === 0) {
+            const lista = document.getElementById("lista-archivos");
+            lista.textContent = "";
+
+            if (datos.archivos.length === 0) {
+                const elemento = document.createElement("li");
+                elemento.classList.add("elemento");
+                elemento.textContent = "No hay cambios pendientes";
+                lista.appendChild(elemento);
+            } else {
+                datos.archivos.forEach(({ archivo, estado }) => {
                     const elemento = document.createElement("li");
-                    elemento.classList.add("elemento")
-                    elemento.textContent = "No hay cambios pendientes";
+                    elemento.classList.add("elemento");
+
+                    const inputSelecciona = document.createElement("input");
+                    inputSelecciona.type = "checkbox";
+                    inputSelecciona.value = archivo;
+                    inputSelecciona.checked = true;
+                    inputSelecciona.name = "archivos";
+                    elemento.appendChild(inputSelecciona);
+
+                    const estadoEl = document.createElement("strong");
+                    estadoEl.textContent = estado;
+                    elemento.appendChild(estadoEl);
+
+                    const archivoEl = document.createElement("span");
+                    archivoEl.textContent = archivo;
+                    elemento.appendChild(archivoEl);
+
                     lista.appendChild(elemento);
-                } else {
-                    datos.archivos.forEach(element => {
-                        const elemento = document.createElement("li");
-                        elemento.classList.add("elemento");
+                });
+            }
 
-                        const inputSelecciona = document.createElement("input");
-                        inputSelecciona.type = "checkbox";
-                        inputSelecciona.value = element.archivo;
-                        inputSelecciona.checked = true;
-                        inputSelecciona.name = "archivos";
-                        inputSelecciona.id = "archivos";
-                        elemento.appendChild(inputSelecciona);
-
-                        const estado = document.createElement("strong");
-                        estado.textContent = element.estado;
-                        elemento.appendChild(estado);
-
-                        const archivo = document.createElement("span");
-                        archivo.textContent = element.archivo;
-                        elemento.appendChild(archivo);
-
-                        lista.appendChild(elemento);
-                    });
-                }
-
-                modalActualizaRepo.style.display = 'flex';
-            });
+            formularioCommit.action = `/commit_repo/${visibilidad}/${nombre}`;
+            modalActualizaRepo.style.display = 'flex';
+        } catch (error) {
+            console.error("Error obteniendo estado del repo:", error);
+        }
     });
 });
+
 
 const cerrarModalActualizaRepo = document.getElementById('cerrar-modal-actualiza-repo');
 cerrarModalActualizaRepo.addEventListener('click', () => {

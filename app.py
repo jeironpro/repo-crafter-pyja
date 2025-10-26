@@ -1,8 +1,3 @@
-"""
-    Implementar eliminar todo, posiblemente actualizar todo.
-    Para actualizar: mostrarme los archivos en el fronted que estan modificados para seleccionar y agregarlo. Pedirme un mensaje para el commit.
-"""
-
 import os
 import secrets
 import requests
@@ -87,10 +82,14 @@ def auxiliar_crea_repo(nombre, visibilidad):
     with open(ruta_license, "w", encoding="utf-8") as fitxer:
         fitxer.write(LICENSE_TEMPLATE.format(year=YEAR, user=GITHUB_USER))
 
-    subprocess.run(["git", "-C", str(carpeta_repo), "init"])
-    subprocess.run(["git", "branch", "-M", "main"])
-    subprocess.run(["git", "add", "."])
-    subprocess.run(["git", "commit", "-m", "Agregando README & LICENSE"], check=True, stderr=subprocess.DEVNULL)
+    subprocess.run(["git", "-C", str(carpeta_repo), "init"], check=True)
+
+    subprocess.run(["git", "-C", str(carpeta_repo), "branch", "-M", "main"], check=True)
+
+    archivos = ["LICENSE", "README.md"]
+    subprocess.run(["git", "-C", str(carpeta_repo), "add", *archivos], check=True)
+
+    subprocess.run(["git", "-C", str(carpeta_repo), "commit", "-m", "Agregando README & LICENSE"], check=True)
 
     datos = {
         "name": nombre,
@@ -101,9 +100,9 @@ def auxiliar_crea_repo(nombre, visibilidad):
     respuesta = sesion.post(API_GITHUB, json=datos)
 
     if respuesta.status_code in [201, 422]:
-        subprocess.run(["git", "remote", "remove", "origin"], stderr=subprocess.DEVNULL)
-        subprocess.run(["git", "remote", "add", "origin", f"git@github.com:{GITHUB_USER}/{nombre}.git"])
-        subprocess.run(["git", "push", "-u", "origin", "main", "--force"])
+        subprocess.run(["git", "-C", str(carpeta_repo), "remote", "remove", "origin"], check=False, stderr=subprocess.DEVNULL)
+        subprocess.run(["git", "-C", str(carpeta_repo), "remote", "add", "origin", f"git@github.com:{GITHUB_USER}/{nombre}.git"], check=True)
+        subprocess.run(["git", "-C", str(carpeta_repo), "push", "-u", "origin", "main"], check=True)
         return f"✅ Repositorio '{nombre}' creado y subido correctamente."
     else:
         return f"❌ Error creando repo en GitHub: {respuesta.status_code} {respuesta.text}"
@@ -217,7 +216,7 @@ def estado_repo(visibilidad, nombre):
 
 @app.route("/commit_repo/<visibilidad>/<nombre>", methods=["POST"])
 def commit_repo(visibilidad, nombre):
-        archivos = request.form.get("archivos")
+        archivos = request.form.getlist("archivos")
         mensaje = request.form.get("mensaje-commit")
 
         if not archivos:
@@ -225,10 +224,10 @@ def commit_repo(visibilidad, nombre):
             return redirect("/")
         
         carpeta_repo = CARPETA_REPOS / ("privado" if visibilidad else "publico") / nombre
-
+ 
         subprocess.run(["git", "-C", str(carpeta_repo), "add", *archivos])
-
         subprocess.run(["git", "-C", str(carpeta_repo), "commit", "-m", mensaje])
+        subprocess.run(["git", "-C", str(carpeta_repo), "push", "origin", "main"])
 
         flash(f"Repositorio actualizado en {carpeta_repo} con {len(archivos)} archivo(s)", "success")
         return redirect("/")
