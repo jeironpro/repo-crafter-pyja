@@ -19,10 +19,23 @@
             <div class="buscador">
                 <input type="search" name="buscador" id="buscador" placeholder="Buscar por: nombre | visibilidad">
             </div>
+            {% with messages = get_flashed_messages(with_categories=true) %}
+                {% if messages %}
+                    <div class="contenedor-mensaje">
+                        {% for categoria, mensaje in messages %}
+                            <div class="mensaje {{ categoria }}">
+                                {{ mensaje }}
+                            </div>
+                        {% endfor %}
+                    </div>
+                {% endif %}
+            {% endwith %}
+            <div class="mensaje">
+
+            </div>
             <div class="acciones">
-                <button type="button" onclick="abrirModal()">Crear repo</button>
-                <form action="" method="post">
-                    <button type="submit">Clonar todo</button>
+                <button type="button" id="abrir-modal-crea-repo">Crear repo</button>
+                <button type="button" id="abrir-modal-clona-repos">Clonar todo</button>
                 </form>
             </div>
         </div>
@@ -44,6 +57,10 @@
                                     <span class="material-symbols-outlined">content_copy</span>
                                 </button>
                             </form>
+                            <button type="button" class="boton-actualizar" title="actualizar" data-nombre="{{ repo.name }}" data-visibilidad="{{ 'privado' if repo.private else 'publico' }}">
+                                <span class="material-symbols-outlined">update</span>
+                            </button>
+
                             <form action="/elimina_repo/{{ repo.name }}" method="post">
                                 <button type="submit" title="eliminar">
                                     <span class="material-symbols-outlined">delete</span>
@@ -65,12 +82,12 @@
                 </tr>
             </tfoot>
         </table>
-        <!-- Modal -->
-        <div class="contenedor-modal">
+        <!-- Modal crea repo -->
+        <div class="contenedor-modal" id="modal-crea-repo">
             <div class="modal">
                 <div class="cabecera-modal">
                     <h1>Crear repositorio</h1>
-                    <span class="material-symbols-outlined">close</span>
+                    <span class="material-symbols-outlined" id="cerrar-modal-crea-repo">close</span>
                 </div>
                 <div class="cuerpo-modal">
                     <form action="/crea_repo" method="post" enctype="multipart/form-data">
@@ -89,6 +106,40 @@
                             </div>
                         </fieldset>
                         <button type="submit">Crear</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+        <!-- Modal clona repos -->
+        <div class="contenedor-modal" id="modal-clona-repos">
+            <div class="modal">
+                <div class="cabecera-modal">
+                    <h1>¿Desea clonar todos los repositorios?</h1>
+                    <span class="material-symbols-outlined" id="cerrar-modal-clona-repos">close</span>
+                </div>
+                <div class="cuerpo-modal">
+                    <form action="/clona_repos" method="post" enctype="multipart/form-data">
+                        <button type="button" id="boton-cerrar-modal-clona-repos">No</button>
+                        <button type="submit">Si</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+        <!-- Modal actualizar repo -->
+        <div class="contenedor-modal" id="modal-actualiza-repo">
+            <div class="modal">
+                <div class="cabecera-modal">
+                    <h1>Actualiza repo</h1>
+                    <span class="material-symbols-outlined" id="cerrar-modal-actualiza-repo">close</span>
+                </div>
+                <div class="cuerpo-modal">
+                    <form action="" method="post">
+                        <ul id="lista-archivos"></ul>
+                        <div class="control">
+                            <label for="mensaje-commit">Mensaje</label>
+                            <input type="text" name="mensaje-commit" id="mensaje-commit">
+                        </div>
+                        <button type="submit">Commit</button>
                     </form>
                 </div>
             </div>

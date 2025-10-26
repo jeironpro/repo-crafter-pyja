@@ -126,7 +126,7 @@
     padding: 0 0.3rem;
 }
 
-.cuerpo-modal form button[type="submit"] {
+.cuerpo-modal form button {
     background-color: #4b7bec;
     border: none;
     border-radius: 6px;
@@ -138,9 +138,71 @@
     transition: all 0.3s ease;
 }
 
-.cuerpo-modal form button[type="submit"]:hover {
+.cuerpo-modal form button:hover {
     background-color: #3867d6;
     transform: translateY(-2px);
+}
+
+/* Modal actualizar */
+#lista-archivos {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    max-height: 400px;
+    overflow-y: auto;
+}
+
+#lista-archivos li.elemento {
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    padding: 10px 12px;
+    margin-bottom: 6px;
+    background-color: #f8f9fa;
+    border-radius: 8px;
+    transition: background-color 0.2s ease, transform 0.1s ease;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+}
+
+#lista-archivos li.elemento:hover {
+    background-color: #e9ecef;
+    transform: translateY(-1px);
+}
+
+#lista-archivos li.elemento input[type="checkbox"] {
+    margin-right: 12px;
+    width: 18px;
+    height: 18px;
+    accent-color: #4f46e5;
+    cursor: pointer;
+}
+
+#lista-archivos li.elemento strong:first-of-type {
+    margin-right: 10px;
+    font-weight: 600;
+    color: #6c757d;
+    min-width: 50px;
+}
+
+#lista-archivos li.elemento strong:last-of-type {
+    font-weight: 500;
+    color: #212529;
+    word-break: break-all;
+}
+
+#modal-actualiza-repo .cuerpo-modal form {
+    max-height: 450px;
+}
+
+#modal-actualiza-repo form {
+    margin-top: 15px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+#modal-actualiza-repo input[type="text"] {
+    width: 100%;
 }
 
 @media (max-width: 500px) {

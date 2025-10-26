@@ -139,6 +139,10 @@ tbody tr:last-child td {
     background-color: #4bec58;
 }
 
+.botones button[title="actualizar"]:hover {
+    background-color: #ece94b;
+}
+
 .botones button[title="eliminar"]:hover {
     background-color: #ec4b4b;
 }
