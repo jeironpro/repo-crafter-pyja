@@ -193,7 +193,9 @@ def clona_repos():
 
 @app.route("/estado_repo/<visibilidad>/<nombre>", methods=["GET"])
 def estado_repo(visibilidad, nombre):
-    carpeta_repo = CARPETA_REPOS / ("privado" if visibilidad else "publico") / nombre
+    print(visibilidad)
+    carpeta_repo = CARPETA_REPOS / visibilidad  / nombre
+    print(carpeta_repo)
 
     if not carpeta_repo.exists():
         flash(f"El repositorio {carpeta_repo} no existe.", "error")
@@ -213,7 +215,6 @@ def estado_repo(visibilidad, nombre):
     
     return {"archivos": archivos}
 
-
 @app.route("/commit_repo/<visibilidad>/<nombre>", methods=["POST"])
 def commit_repo(visibilidad, nombre):
         archivos = request.form.getlist("archivos")
@@ -223,7 +224,7 @@ def commit_repo(visibilidad, nombre):
             flash("Debes seleccionar al menos un archivo", "error")
             return redirect("/")
         
-        carpeta_repo = CARPETA_REPOS / ("privado" if visibilidad else "publico") / nombre
+        carpeta_repo = CARPETA_REPOS / visibilidad / nombre
  
         subprocess.run(["git", "-C", str(carpeta_repo), "add", *archivos])
         subprocess.run(["git", "-C", str(carpeta_repo), "commit", "-m", mensaje])
@@ -231,6 +232,65 @@ def commit_repo(visibilidad, nombre):
 
         flash(f"Repositorio actualizado en {carpeta_repo} con {len(archivos)} archivo(s)", "success")
         return redirect("/")
+
+@app.route("/cambiar_visibilidad/<nombre>", methods=["POST"])
+def cambiar_visibilidad(nombre):
+    visibilidad = request.form.get("cambia-visibilidad")
+
+    nueva_visibilidad = "privado" if visibilidad else "publico"
+    anterior_visibilidad = "publico" if nueva_visibilidad == "privado" else "privado"
+
+    antigua_ruta_repo = CARPETA_REPOS / anterior_visibilidad / nombre
+    nueva_ruta_repo = CARPETA_REPOS / nueva_visibilidad / nombre
+
+    url_repo = f"https://api.github.com/repos/{GITHUB_USER}/{nombre}"
+
+    datos = {
+        "private": visibilidad
+    }
+
+    respuesta = requests.patch(url_repo, headers=CABECERAS, json=datos)
+    
+    if respuesta.status_code == 200:
+        subprocess.run(["mv", antigua_ruta_repo, nueva_ruta_repo])
+        flash(f"Cambiada repo '{nombre}' de {anterior_visibilidad} a {nueva_visibilidad}", "success")
+        return redirect("/")
+    
+    flash(f"No se pudo cambiar repo {nombre} de {anterior_visibilidad} a {nueva_visibilidad}", "error")
+    return redirect("/")
+
+@app.route("/crea_elimina_pagina/<nombre>", methods=["POST"])
+def crea_elimina_pagina(nombre):
+    url_repo = f"https://api.github.com/repos/{GITHUB_USER}/{nombre}/pages"
+
+    estado = requests.get(url_repo, headers=CABECERAS)
+
+    if estado.status_code == 200:
+        respuesta = requests.delete(url_repo, headers=CABECERAS)
+        if respuesta.status_code == 204:
+            flash("Página eliminada correctamente", "success")
+            return redirect("/")
+        else:
+            flash(f"No se pudo eliminar la página: {respuesta.text}", "error")
+            return redirect("/")
+    elif estado.status_code == 404:
+        datos = {
+            "source": {
+                "branch": "main",
+                "path": "/"
+            }
+        }
+
+        respuesta = requests.post(url_repo, headers=CABECERAS, json=datos)
+
+        if respuesta.status_code in [201, 204]:
+            flash("Pagina creada correctamente", "success")
+            return redirect("/")
+        else:
+            flash("No se ha podido crear la pagina", "error")
+            return redirect("/")
+    flash(f"Error al consultar el estado de la página: {estado.text}", "error")
+    return redirect("/")
 
 @app.route('/elimina_repo/<nombre>', methods=["POST"])
 def elimina_repo(nombre):

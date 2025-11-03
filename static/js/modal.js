@@ -99,3 +99,50 @@ const cerrarModalActualizaRepo = document.getElementById('cerrar-modal-actualiza
 cerrarModalActualizaRepo.addEventListener('click', () => {
     modalActualizaRepo.style.display = 'none';
 });
+
+const botonesEliminaRepo = document.querySelectorAll(".boton-eliminar");
+const modalEliminaRepo = document.getElementById('modal-elimina-repo');
+const formularioElimina = document.getElementById('form-elimina-repo');
+
+botonesEliminaRepo.forEach(boton => {
+    boton.addEventListener("click", async () => {
+        const nombre = boton.dataset.nombre;
+
+        formularioElimina.action = `/elimina_repo/${nombre}`;
+        modalEliminaRepo.style.display = "flex";
+    });
+});
+
+const cerrarModalEliminaRepo = document.getElementById('cerrar-modal-elimina-repo');
+cerrarModalEliminaRepo.addEventListener('click', () => {
+    modalEliminaRepo.style.display = 'none';
+});
+
+const botonCerrarModalEliminaRepo = document.getElementById('boton-cerrar-modal-elimina-repo');
+botonCerrarModalEliminaRepo.addEventListener("click", () => {
+    modalEliminaRepo.style.display = 'none';
+});
+
+const botonesClonaRepo = document.querySelectorAll(".boton-clonar");
+const modalClonaRepo = document.getElementById('modal-clona-repo');
+const formularioClona = document.getElementById('form-clona-repo');
+
+botonesClonaRepo.forEach(boton => {
+    boton.addEventListener("click", async () => {
+        const nombre = boton.dataset.nombre;
+        const visibilidad = boton.dataset.visibilidad;
+
+        formularioClona.action = `/clona_repo/${nombre}/${visibilidad}`;
+        modalClonaRepo.style.display = "flex";
+    });
+});
+
+const cerrarModalClonaRepo = document.getElementById('cerrar-modal-clona-repo');
+cerrarModalClonaRepo.addEventListener('click', () => {
+    modalClonaRepo.style.display = 'none';
+});
+
+const botonCerrarModalClonaRepo = document.getElementById('boton-cerrar-modal-clona-repo');
+botonCerrarModalClonaRepo.addEventListener("click", () => {
+    modalClonaRepo.style.display = 'none';
+});

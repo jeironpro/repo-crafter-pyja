@@ -41,29 +41,53 @@
             <thead>
                 <th>Nombre</th>
                 <th>Visibilidad</th>
+                <th>Página</th>
                 <th>Gestión</th>
             </thead>
             <tbody>
                 {% for repo in repos %}
                 <tr>
                     <td data-label="Nombre">{{ repo.name }}</td>
-                    <td data-label="Visibilidad">{{ 'Privado' if repo.private else 'Público' }}</td>
+                    <td data-label="Visibilidad">
+                        {{ 'Privado' if repo.private else 'Público' }}
+                        <form action="/cambiar_visibilidad/{{ repo.name }}" method="post">
+                            <label class="visibilidad">
+                                <input type="checkbox" name="cambia-visibilidad" id="cambia-visibilidad" {% if repo.private %} checked {% endif %}>
+                                <span class="deslizante">
+                                    <span class="material-symbols-outlined icono privado" title="privado">lock</span>
+                                    <span class="material-symbols-outlined icono publico" title="publico">public</span>
+                                </span>
+                            </label>
+                        </form>
+                    </td>
+                    <td data-label="Página">
+                        {% if repo.private %}
+                            No disponible
+                        {% else %}
+                            {{ 'Creada' if repo.has_pages else 'No creada' }}
+                            <form action="/crea_elimina_pagina/{{ repo.name }}" method="post">
+                                <label class="visibilidad">
+                                    <input type="checkbox" name="crea-pagina" id="crea-pagina" {% if repo.has_pages %} checked {% endif %}>
+                                    <span class="deslizante">
+                                        <span class="material-symbols-outlined icono privado" title="privado">unarchive</span>
+                                        <span class="material-symbols-outlined icono publico" title="publico">pages</span>
+                                    </span>
+                                </label>
+                            </form>
+                        {% endif %}
+                    </td>
                     <td data-label="Gestión">
                         <div class="botones">
-                            <form action="/clona_repo/{{ repo.name }}/{{ 'privado' if repo.private else 'publico' }}" method="post">
-                                <button type="submit" title="clonar">
-                                    <span class="material-symbols-outlined">content_copy</span>
-                                </button>
-                            </form>
+                            <button type="button" class="boton-clonar" title="clonar" data-nombre="{{ repo.name }}" data-visibilidad="{{ 'privado' if repo.private else 'publico' }}">
+                                <span class="material-symbols-outlined">content_copy</span>
+                            </button>
                             <button type="button" class="boton-actualizar" title="actualizar" data-nombre="{{ repo.name }}" data-visibilidad="{{ 'privado' if repo.private else 'publico' }}">
                                 <span class="material-symbols-outlined">update</span>
                             </button>
 
-                            <form action="/elimina_repo/{{ repo.name }}" method="post">
-                                <button type="submit" title="eliminar">
-                                    <span class="material-symbols-outlined">delete</span>
-                                </button>
-                            </form>
+                            <button type="button" class="boton-eliminar" title="eliminar" data-nombre="{{ repo.name }}">
+                                <span class="material-symbols-outlined">delete</span>
+                            </button>
                         </div>
                     </td>
                 </tr>
@@ -71,7 +95,7 @@
             </tbody>
             <tfoot>
                 <tr>
-                    <td colspan="3">
+                    <td colspan="4">
                         <div class="contenedor-total-repos">
                             <span>Total de repositorios:</span>
                             <span id="total-repos">{{ repos | length }}</span>
@@ -123,7 +147,22 @@
                 </div>
             </div>
         </div>
-        <!-- Modal actualizar repo -->
+        <!-- Modal clona repo -->
+        <div class="contenedor-modal" id="modal-clona-repo">
+            <div class="modal">
+                <div class="cabecera-modal">
+                    <h1>¿Desea clonar este repo?</h1>
+                    <span class="material-symbols-outlined" id="cerrar-modal-clona-repo">close</span>
+                </div>
+                <div class="cuerpo-modal">
+                    <form action="" method="post" id="form-clona-repo">
+                        <button type="button" id="boton-cerrar-modal-clona-repo">No</button>
+                        <button type="submit">Si</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+        <!-- Modal actualiza repo -->
         <div class="contenedor-modal" id="modal-actualiza-repo">
             <div class="modal">
                 <div class="cabecera-modal">
@@ -142,6 +181,21 @@
                 </div>
             </div>
         </div>
+        <!-- Modal elimina repo -->
+        <div class="contenedor-modal" id="modal-elimina-repo">
+            <div class="modal">
+                <div class="cabecera-modal">
+                    <h1>¿Desea eliminar este repo?</h1>
+                    <span class="material-symbols-outlined" id="cerrar-modal-elimina-repo">close</span>
+                </div>
+                <div class="cuerpo-modal">
+                    <form action="" method="post" id="form-elimina-repo">
+                        <button type="button" id="boton-cerrar-modal-elimina-repo">No</button>
+                        <button type="submit">Si</button>
+                    </form>
+                </div>
+            </div>
+        </div>
     </main>
     <footer>
         &copy; Todos los derechos reservados 2025 - JeironPro
@@ -149,5 +203,7 @@
     <script src="{{ url_for('static', filename='js/buscador.js') }}"></script>
     <script src="{{ url_for('static', filename='js/modal.js') }}"></script>
     <script src="{{ url_for('static', filename='js/mensaje.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/visibilidad.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/pagina.js') }}"></script>
 </body>
 </html>
