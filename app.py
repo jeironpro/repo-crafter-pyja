@@ -22,7 +22,7 @@ CABECERAS = {
     "Accept": "application/vnd.github+json"
 }
 HOME = Path.home()
-CARPETA_REPOS = HOME / "Documentos" / "repositorios"
+CARPETA_REPOS = HOME / "repositorios"
 
 # Año actual para la licencia
 YEAR = datetime.now().year
@@ -140,7 +140,7 @@ def auxiliar_clona_repos():
 
             carpeta_repo = CARPETA_REPOS / ("privado" if visibilidad else "publico") / nombre
 
-            if not carpeta_repo.exists() and not any(carpeta_repo.iterdir()):
+            if not carpeta_repo.exists():
                 subprocess.run(["git", "clone", enlace_ssh, str(carpeta_repo)], check=True)
 
         pagina += 1
