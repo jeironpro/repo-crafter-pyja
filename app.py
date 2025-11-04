@@ -140,9 +140,7 @@ def auxiliar_clona_repos():
 
             carpeta_repo = CARPETA_REPOS / ("privado" if visibilidad else "publico") / nombre
 
-            if carpeta_repo.exists() and any(carpeta_repo.iterdir()):
-                print(f"⚠️ El repo '{nombre}' ya existe, saltando.")
-            else:
+            if not carpeta_repo.exists() and not any(carpeta_repo.iterdir()):
                 subprocess.run(["git", "clone", enlace_ssh, str(carpeta_repo)], check=True)
 
         pagina += 1
@@ -193,9 +191,7 @@ def clona_repos():
 
 @app.route("/estado_repo/<visibilidad>/<nombre>", methods=["GET"])
 def estado_repo(visibilidad, nombre):
-    print(visibilidad)
     carpeta_repo = CARPETA_REPOS / visibilidad  / nombre
-    print(carpeta_repo)
 
     if not carpeta_repo.exists():
         flash(f"El repositorio {carpeta_repo} no existe.", "error")
