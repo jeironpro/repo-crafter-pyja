@@ -33,7 +33,7 @@ Para utilizar esta aplicación, sigue estos pasos:
     1. En la raíz del proyecto, crea un archivo llamado `.env` y añade las siguientes variables de entorno:
         - GITHUB_TOKEN=tu_token_aqui
         - GITHUB_USER=tu_usuario_de_github
-        - GITHUB_USER=tu_email_de_github
+        - GITHUB_EMAIL=tu_email_de_github
 
 ## 📜 Licencia
 Este proyecto está bajo la licencia **MIT**.  
