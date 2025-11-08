@@ -14,6 +14,7 @@ app.secret_key = secrets.token_hex(32)
 load_dotenv()
 
 GITHUB_USER = os.getenv("GITHUB_USER")
+GITHUB_EMAIL= os.getenv("GITHUB_EMAIL")
 GITHUB_TOKEN = os.getenv("GITHUB_TOKEN")
 
 API_GITHUB="https://api.github.com/user/repos"
@@ -22,7 +23,7 @@ CABECERAS = {
     "Accept": "application/vnd.github+json"
 }
 HOME = Path.home()
-CARPETA_REPOS = HOME / "repositorios"
+CARPETA_REPOS = HOME / "Documentos" / "repositorios"
 
 # Año actual para la licencia
 YEAR = datetime.now().year
@@ -89,7 +90,14 @@ def auxiliar_crea_repo(nombre, visibilidad):
     archivos = ["LICENSE", "README.md"]
     subprocess.run(["git", "-C", str(carpeta_repo), "add", *archivos], check=True)
 
-    subprocess.run(["git", "-C", str(carpeta_repo), "commit", "-m", "Agregando README & LICENSE"], check=True)
+    subprocess.run([
+        "git", 
+        "-C", str(carpeta_repo),
+        "-c", f"user.name={GITHUB_USER}",
+        "-c", f"user.email={GITHUB_EMAIL}",
+        "commit", "-m", "Agregando README & LICENSE"
+        ], check=True
+    )
 
     datos = {
         "name": nombre,
@@ -223,7 +231,13 @@ def commit_repo(visibilidad, nombre):
         carpeta_repo = CARPETA_REPOS / visibilidad / nombre
  
         subprocess.run(["git", "-C", str(carpeta_repo), "add", *archivos])
-        subprocess.run(["git", "-C", str(carpeta_repo), "commit", "-m", mensaje])
+        subprocess.run([
+            "git", 
+            "-C", str(carpeta_repo), 
+            "-c", f"user.name={GITHUB_USER}",
+            "-c", f"user.email={GITHUB_EMAIL}",
+            "commit", "-m", mensaje
+        ])
         subprocess.run(["git", "-C", str(carpeta_repo), "push", "origin", "main"])
 
         flash(f"Repositorio actualizado en {carpeta_repo} con {len(archivos)} archivo(s)", "success")
